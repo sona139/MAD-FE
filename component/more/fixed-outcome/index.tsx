@@ -1,8 +1,10 @@
 import Entypo from "react-native-vector-icons/Entypo";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { IFixedOutcome } from "../../../interface";
+import AuthContext from "../../../hook/userContext";
+import { getAllFixedExpense } from "../../../api/fixed-expense";
 
 export const intervals = {
   daily: "Hằng ngày",
@@ -10,34 +12,20 @@ export const intervals = {
   yearly: "Hằng năm",
 };
 
-export const fixedOutcomeList: IFixedOutcome[] = [
-  {
-    id: "1",
-    title: "Test chi tiêu cố định",
-    money: 450,
-    category: {
-      id: "3",
-      name: "Quần áo",
-    },
-    interval: intervals.daily,
-    startDate: new Date(2024, 0, 2),
-    endDate: new Date(2024, 11, 1),
-  },
-  {
-    id: "2",
-    title: "Test",
-    money: 200,
-    category: {
-      id: "2",
-      name: "Chi tiêu hằng ngày",
-    },
-    interval: intervals.monthly,
-    startDate: new Date(2023, 0, 2),
-    endDate: new Date(2024, 11, 1),
-  },
-];
-
 const FixedOutcome = ({ navigation }) => {
+  const [fixedOutcomeList, setFixedOutcomeList] = useState([]);
+  const { up } = useContext(AuthContext);
+
+  useEffect(() => {
+    getAllFixedExpense()
+      .then((res) =>
+        setFixedOutcomeList(
+          res.data.map((data) => ({ ...data, category: data.category_expense }))
+        )
+      )
+      .catch((e) => console.log(e));
+  }, [up]);
+
   return (
     <View style={{ padding: 16, paddingTop: 32 }}>
       <View
@@ -78,7 +66,7 @@ const FixedOutcome = ({ navigation }) => {
                     alignItems: "center",
                   }}
                 >
-                  <Text style={{ fontSize: 10 }}>{data.category.cibtebt}</Text>
+                  <Text style={{ fontSize: 10 }}>{data.category.content}</Text>
                   <Entypo name="dot-single" />
                   <Text style={{ fontSize: 10 }}>{data.interval}</Text>
                 </View>

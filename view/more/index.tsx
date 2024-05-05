@@ -5,14 +5,12 @@ import EditOutcome from "../../component/calendar/edit/outcome";
 import MoreScreen from "../../component/more";
 import Compared from "../../component/more/compare/Compared";
 import FixedIncome from "../../component/more/fixed-income";
-import {
-  default as AddFixedIncome,
-  default as EditFixedIncome,
-} from "../../component/more/fixed-income/add";
+import AddFixedIncome from "../../component/more/fixed-income/add";
 import FixedOutcome from "../../component/more/fixed-outcome";
 import AddFixedOutcome from "../../component/more/fixed-outcome/add";
 import Search from "../../component/more/search/Search";
 import EditFixedOutcome from "../../component/more/fixed-outcome/edit";
+import EditFixedIncome from "../../component/more/fixed-income/edit";
 
 const Stack = createStackNavigator();
 

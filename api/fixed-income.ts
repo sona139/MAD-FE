@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Get user Incomes
-export const getAllIncome = async () => {
+export const getAllFixedIncome = async () => {
   try {
     const response = await axios.get("fixed-income");
     return response;

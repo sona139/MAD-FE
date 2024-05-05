@@ -1,5 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -9,26 +9,62 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { categoryIncomeList } from "../../home/income";
 import { intervals } from "../fixed-outcome";
+import { getAllCategoryIncome } from "../../../api/category-income";
+import { ICategory } from "../../../interface";
+import {
+  deleteFixedIncome,
+  updateFixedIncome,
+} from "../../../api/fixed-income";
+import AuthContext from "../../../hook/userContext";
 
-export default function EditFixedIncome({ route }) {
+export default function EditFixedIncome({ route, navigation }) {
   const { data } = route.params;
 
   const [title, setTitle] = useState(data.title);
   const [money, setMoney] = useState(data.money);
   const [selectedCategory, setSelectedCategory] = useState(data.category);
-  const [selectedInterval, setSelectedInterval] = useState(data.interval);
-  const [startDate, setStartDate] = useState(data.startDate);
-  const [endDate, setEndDate] = useState(data.endDate);
+  const [selectedInterval, setSelectedInterval] = useState(data.repeat);
+  const [categoryIncomeList, setCategoryIncomeList] = useState<ICategory[]>([]);
+  const [startDate, setStartDate] = useState(new Date(data.startDate));
+  const [endDate, setEndDate] = useState(new Date(data.endDate));
 
   const handlePressCategory = (v) => {
     setSelectedCategory(v);
   };
 
-  const handleAdd = () => {};
+  useEffect(() => {
+    getAllCategoryIncome()
+      .then((res) => {
+        setCategoryIncomeList(res.data);
+        return res.data;
+      })
+      .then((data) => setSelectedCategory(data[0]))
+      .catch((e) => console.log());
+  }, []);
 
-  const handleDelete = () => {};
+  const { forceUpdate } = useContext(AuthContext);
+
+  const handleAdd = async () => {
+    const _data = {
+      title,
+      money,
+      startDate,
+      endDate,
+      repeat: selectedInterval,
+      categoryIncomeId: selectedCategory.id,
+    };
+
+    await updateFixedIncome(data.id, _data)
+      .then(() => forceUpdate((prev) => prev + 1))
+      .then(() => navigation.navigate("Fixed income"));
+  };
+
+  const handleDelete = async () => {
+    await deleteFixedIncome(data.id)
+      .then(() => forceUpdate((prev) => prev + 1))
+      .then(() => navigation.navigate("Fixed income"));
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

@@ -1,7 +1,8 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Keyboard,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -10,23 +11,65 @@ import {
   View,
 } from "react-native";
 import { intervals } from ".";
-import { categoryOutcomeList } from "../../calendar/add/outcome";
+import { getAllCategoryExpense } from "../../../api/category-expense";
+import AuthContext from "../../../hook/userContext";
+import { Modal } from "native-base";
+import { addFixedExpense } from "../../../api/fixed-expense";
 
-export default function AddFixedOutcome() {
+export default function AddFixedOutcome({ navigation }) {
   const [title, setTitle] = useState("");
   const [money, setMoney] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState(
-    categoryOutcomeList[0]
-  );
+  const [selectedCategory, setSelectedCategory] = useState<any>({});
+  const [categoryOutcomeList, setCategoryOutcomeList] = useState([]);
   const [selectedInterval, setSelectedInterval] = useState(intervals.daily);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState("");
+
+  useEffect(() => {
+    getAllCategoryExpense()
+      .then((res) => {
+        setCategoryOutcomeList(res.data);
+        return res.data;
+      })
+      .then((data) => setSelectedCategory(data[0]))
+      .catch((e) => console.log());
+  }, []);
+
+  const { forceUpdate } = useContext(AuthContext);
 
   const handlePressCategory = (v) => {
     setSelectedCategory(v);
   };
 
-  const handleAdd = () => {};
+  const handleAdd = async () => {
+    if (money <= 0) {
+      setModalContent("Tiền chi không được nhỏ hơn hoặc bằng 0!");
+      setModalVisible(true);
+      return;
+    }
+
+    if (!title.trim().length) {
+      setModalContent("Tiêu đề không được để trống");
+      setModalVisible(true);
+      return;
+    }
+
+    const data = {
+      title,
+      money,
+      startDate,
+      endDate,
+      repeat: selectedInterval,
+      categoryExpenseId: selectedCategory.id,
+    };
+
+    await addFixedExpense(data)
+      .then(() => forceUpdate((prev) => prev + 1))
+      .then(() => navigation.navigate("Fixed spend"));
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -42,6 +85,26 @@ export default function AddFixedOutcome() {
           position: "relative",
         }}
       >
+        <Modal
+          animationPreset="slide"
+          isOpen={modalVisible}
+          onClose={() => {
+            setModalVisible((prev) => !prev);
+          }}
+          closeOnOverlayClick
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>{modalContent}</Text>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Đóng</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
         <View
           style={{
             display: "flex",
@@ -280,5 +343,47 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     fontSize: 18,
     color: "#fff",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    fontSize: 20,
+    textAlign: "center",
   },
 });

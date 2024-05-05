@@ -1,37 +1,27 @@
 import Entypo from "react-native-vector-icons/Entypo";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { intervals } from "../fixed-outcome";
-
-export const fixedIncomeList = [
-  {
-    id: 1,
-    title: "Test thu nhập cố định",
-    money: 450,
-    category: {
-      id: 1,
-      content: "Tiền lương",
-    },
-    interval: intervals.daily,
-    startDate: new Date(2023, 11, 1),
-    endDate: new Date(2024, 0, 6),
-  },
-  {
-    id: 2,
-    title: "Test",
-    money: 200,
-    category: {
-      id: 2,
-      content: "Tiền phụ cấp",
-    },
-    interval: intervals.monthly,
-    startDate: new Date(2024, 0, 3),
-    endDate: new Date(2024, 10, 1),
-  },
-];
+import { getAllFixedIncome } from "../../../api/fixed-income";
+import AuthContext from "../../../hook/userContext";
 
 const FixedIncome = ({ navigation }) => {
+  const [fixedIncomeList, setFixedIncomeList] = useState([]);
+  const { up } = useContext(AuthContext);
+
+  useEffect(() => {
+    getAllFixedIncome()
+      .then((res) =>
+        setFixedIncomeList(
+          res.data.map((data) => ({ ...data, category: data.category_income }))
+        )
+      )
+      .catch((e) => console.log(e));
+  }, [up]);
+
+  console.log({ fixedIncomeList });
+
   return (
     <View style={{ padding: 16, paddingTop: 32 }}>
       <View

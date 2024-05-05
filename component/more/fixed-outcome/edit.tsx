@@ -1,5 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -10,25 +10,61 @@ import {
   View,
 } from "react-native";
 import { intervals } from ".";
-import { categoryOutcomeList } from "../../calendar/add/outcome";
+import { getAllCategoryExpense } from "../../../api/category-expense";
+import {
+  deleteFixedExpense,
+  updateFixedExpense,
+} from "../../../api/fixed-expense";
+import AuthContext from "../../../hook/userContext";
 
-export default function EditFixedOutcome({ route }) {
+export default function EditFixedOutcome({ route, navigation }) {
   const { data } = route.params;
 
   const [title, setTitle] = useState(data.title);
   const [money, setMoney] = useState(data.money);
   const [selectedCategory, setSelectedCategory] = useState(data.category);
-  const [selectedInterval, setSelectedInterval] = useState(data.interval);
-  const [startDate, setStartDate] = useState(data.startDate);
-  const [endDate, setEndDate] = useState(data.endDate);
+  const [selectedInterval, setSelectedInterval] = useState(data.repeat);
+  const [startDate, setStartDate] = useState(new Date(data.startDate));
+  const [endDate, setEndDate] = useState(new Date(data.endDate));
+
+  const [categoryOutcomeList, setCategoryOutcomeList] = useState([]);
+
+  useEffect(() => {
+    getAllCategoryExpense()
+      .then((res) => {
+        setCategoryOutcomeList(res.data);
+        return res.data;
+      })
+      .then((data) => setSelectedCategory(data[0]))
+      .catch((e) => console.log(e));
+  }, []);
 
   const handlePressCategory = (v) => {
     setSelectedCategory(v);
   };
 
-  const handleAdd = () => {};
+  const { forceUpdate } = useContext(AuthContext);
 
-  const handleDelete = () => {};
+  const handleAdd = async () => {
+    const _data = {
+      title,
+      money,
+      startDate,
+      endDate,
+      repeat: selectedInterval,
+      categoryExpenseId: selectedCategory.id,
+    };
+
+    await updateFixedExpense(data.id, _data)
+      .then(() => forceUpdate((prev) => prev + 1))
+      .then(() => navigation.navigate("Fixed spend"));
+  };
+
+  const handleDelete = async () => {
+    await deleteFixedExpense(data.id)
+      .then(() => forceUpdate((prev) => prev + 1))
+      .then(() => navigation.navigate("Fixed spend"));
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

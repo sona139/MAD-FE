@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Get user Expenses
-export const getAllExpense = async () => {
+export const getAllFixedExpense = async () => {
   try {
     const response = await axios.get("fixed-expense");
     return response;
