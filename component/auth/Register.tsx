@@ -101,7 +101,6 @@ const RegisterForm = ({ navigation }) => {
               onChangeText={field.onChange} // Sửa đổi ở đây
               value={field.value} // Sửa đổi ở đây
               placeholder="Tên"
-              secureTextEntry={true}
             />
           )}
           name="name"
