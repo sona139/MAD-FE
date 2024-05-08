@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
+import AuthContext from "../../hook/userContext";
 
 export const MoreItem = ({ name, onPress }) => {
   return (
@@ -28,6 +29,7 @@ const Devider = () => {
 };
 
 const MoreScreen = ({ navigation }) => {
+  const { setUser } = useContext(AuthContext);
   return (
     <View style={{ padding: 24, paddingTop: 36, display: "flex", gap: 36 }}>
       <View
@@ -70,6 +72,15 @@ const MoreScreen = ({ navigation }) => {
           name={"Thu nhập cố định"}
           onPress={() => navigation.navigate("Fixed income")}
         ></MoreItem>
+      </View>
+      <View
+        style={{
+          borderRadius: 20,
+          backgroundColor: "#EAEFD6",
+          paddingHorizontal: 24,
+        }}
+      >
+        <MoreItem name={"Đăng xuất"} onPress={() => setUser({})}></MoreItem>
       </View>
     </View>
   );
