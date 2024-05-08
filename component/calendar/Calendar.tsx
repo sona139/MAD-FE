@@ -1,18 +1,9 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
-import {
-  endOfDay,
-  endOfMonth,
-  endOfWeek,
-  format,
-  startOfDay,
-  startOfMonth,
-  startOfWeek,
-  startOfYear,
-} from "date-fns";
+import { endOfDay, endOfWeek, endOfMonth, format, startOfDay, startOfMonth, startOfWeek, startOfYear } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Entypo from "react-native-vector-icons/Entypo";
+import DateTimePicker from "@react-native-community/datetimepicker"; // Import DateTimePicker
 import { fixedIncomeList } from "../more/fixed-income";
 import { fixedOutcomeList, intervals } from "../more/fixed-outcome";
 import { IFixedIncome, IFixedOutcome } from "../../interface";
@@ -24,6 +15,7 @@ const Calendar = ({ date, setDate, filteredData, navigation }) => {
   const [lastPress, setLastPress] = useState(0);
   const [fixedIncomeList, setFixedIncomeList] = useState<IFixedIncome[]>([]);
   const [fixedOutcomeList, setFixedOutcomeList] = useState<IFixedOutcome[]>([]);
+  const [showDatePicker, setShowDatePicker] = useState(false); // State to control DateTimePicker visibility
 
   useEffect(() => {
     const d = new Date(date);
@@ -85,12 +77,22 @@ const Calendar = ({ date, setDate, filteredData, navigation }) => {
         >
           <Entypo name="chevron-left" size={24} />
         </TouchableOpacity>
-        <DateTimePicker
-          value={date}
-          onChange={(e, date) => {
-            setDate(date);
-          }}
-        />
+        <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+          <Text style={{ color: "black", fontSize: 18 }}>
+            {date.getMonth() + 1}/{date.getFullYear()}
+          </Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            onChange={(event, selectedDate) => {
+              const currentDate = selectedDate || date;
+              setShowDatePicker(false);
+              setDate(currentDate);
+            }}
+          />
+        )}
         <TouchableOpacity
           onPress={() => {
             const newDate = new Date(date);

@@ -1,27 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LineChart, Grid, YAxis, XAxis } from 'react-native-svg-charts';
+import { getAllExpense } from '../../../api/expense';
+import { getAllIncome } from '../../../api/income';
 
 const Compared = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedTab, setSelectedTab] = useState('Chi tiêu');
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [data, setData] = useState([]);
+  const [dataText, setDataText] = useState([]);
+  const [labels, setLabels] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const expenseResponse = await getAllExpense();
+        const incomeResponse = await getAllIncome();
+
+        const yearData = {};
+
+        let balance = 0;
+
+        for (let i = 1; i <= 12; i++) {
+          const monthExpense = expenseResponse.data.filter(item => new Date(item.date).getFullYear() === currentYear && new Date(item.date).getMonth() + 1 === i);
+          const monthIncome = incomeResponse.data.filter(item => new Date(item.date).getFullYear() === currentYear && new Date(item.date).getMonth() + 1 === i);
+          const monthTotal = monthIncome.reduce((acc, curr) => acc + curr.money, 0) - monthExpense.reduce((acc, curr) => acc + curr.money, 0);
+          balance += monthTotal;
+          yearData[i] = balance;
+        }
+
+        const lineChartData = [];
+        const lineChartDataText = [];
+        const lineChartLabels = [];
+        let prevBalance = 0;
+        for (let i = 1; i <= 12; i++) {
+          const balance = yearData[i] || prevBalance;
+          lineChartData.push(balance);
+          lineChartDataText.push(`${balance.toLocaleString()}đ`);
+          lineChartLabels.push(`T${i}`);
+          prevBalance = balance;
+        }
+
+        setData(lineChartData);
+        setDataText(lineChartDataText);
+        setLabels(lineChartLabels);
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+
+    fetchData();
+  }, [currentYear]);
 
   const goToPreviousYear = () => {
-    const previousYear = new Date(currentMonth.getFullYear() - 1, currentMonth.getMonth(), 1);
-    setCurrentMonth(previousYear);
+    setCurrentYear(currentYear - 1);
   };
 
   const goToNextYear = () => {
-    const nextYear = new Date(currentMonth.getFullYear() + 1, currentMonth.getMonth(), 1);
-    setCurrentMonth(nextYear);
+    setCurrentYear(currentYear + 1);
   };
-
-  const formattedCurrentYear = currentMonth.getFullYear().toString();
-
-  // Dữ liệu và nhãn cho biểu đồ
-  const data = [0, 2465000, 5840000, 5840000, 5840000, 5840000, 5840000, 5840000, 5840000, 5840000, 5840000, 5840000];
-  const dataText = ['0đ', '2,465,000đ', '5,840,000đ', '5,840,000đ', '5,840,000đ', '5,840,000đ', '5,840,000đ', '5,840,000đ', '5,840,000đ', '5,840,000đ', '5,840,000đ', '5,840,000đ'];
-  const labels = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
 
   return (
     <View style={styles.container}>
@@ -30,7 +66,7 @@ const Compared = () => {
           <Text style={[styles.button]}>{'<'}</Text>
         </TouchableOpacity>
         <View style={[styles.yearContainer]}>
-          <Text style={styles.year}>{formattedCurrentYear}</Text>
+          <Text style={styles.year}>{currentYear}</Text>
         </View>
         <TouchableOpacity onPress={goToNextYear}>
           <Text style={[styles.button]}>{'>'}</Text>
@@ -101,7 +137,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     marginTop: 10,
-    maxHeight: 300, // Giới hạn chiều cao của ScrollView
+    maxHeight: 300,
   },
   dataItem: {
     flexDirection: 'row',

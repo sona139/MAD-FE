@@ -1,4 +1,4 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
+// import DateTimePicker from "@react-native-community/datetimepicker";
 import { useContext, useEffect, useState } from "react";
 import {
   Keyboard,
@@ -284,12 +284,12 @@ export default function AddFixedIncome({ navigation }) {
           }}
         >
           <Text style={{ fontSize: 18 }}>Bắt đầu: </Text>
-          <DateTimePicker
+          {/* <DateTimePicker
             value={startDate}
             onChange={(e, date) => {
               setStartDate(date);
             }}
-          />
+          /> */}
         </View>
         <View
           style={{
@@ -300,12 +300,12 @@ export default function AddFixedIncome({ navigation }) {
           }}
         >
           <Text style={{ fontSize: 18 }}>Kết thúc: </Text>
-          <DateTimePicker
+          {/* <DateTimePicker
             value={endDate}
             onChange={(e, date) => {
               setEndDate(date);
             }}
-          />
+          /> */}
         </View>
 
         <View style={styles.buttonAddContainer}>

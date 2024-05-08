@@ -1,5 +1,4 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Keyboard,
   Pressable,
@@ -15,16 +14,17 @@ import { Modal } from "native-base";
 import { getAllCategoryIncome } from "../../api/category-income";
 import { addIncome } from "../../api/income";
 import AuthContext from "../../hook/userContext";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function IncomeScreen({ route }) {
   const [categoryIncomeList, setCategoryIncomeList] = useState<ICategory[]>([]);
-
   const [date, setDate] = useState(route.params?.date || new Date());
   const [note, setNote] = useState("");
   const [money, setMoney] = useState(0);
   const [selectedItem, setSelectedItem] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const { forceUpdate } = useContext(AuthContext);
 
@@ -56,6 +56,13 @@ export default function IncomeScreen({ route }) {
       setModalContent("Thêm thành công tiền thu!");
       forceUpdate((prev) => prev + 1);
     });
+  };
+
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -101,14 +108,21 @@ export default function IncomeScreen({ route }) {
           }}
         >
           <Text style={{ fontSize: 18 }}>Ngày: </Text>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <Text style={styles.dateText}>{formatDate(date)}</Text>
+          </TouchableOpacity>
+        </View>
+        {showDatePicker && (
           <DateTimePicker
             value={date}
-            onChange={(e, date) => {
-              setDate(date);
+            mode="date"
+            onChange={(event, selectedDate) => {
+              const currentDate = selectedDate || date;
+              setShowDatePicker(false);
+              setDate(currentDate);
             }}
           />
-        </View>
-
+        )}
         <View
           style={{
             display: "flex",
@@ -292,6 +306,10 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     backgroundColor: "#2196F3",
+  },
+  dateText: {
+    fontSize: 18,
+    fontFamily: "Arial", 
   },
   textStyle: {
     color: "white",

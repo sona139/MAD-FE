@@ -1,4 +1,4 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
+// import DateTimePicker from "@react-native-community/datetimepicker";
 import { useContext, useEffect, useState } from "react";
 import {
   Keyboard,
@@ -112,12 +112,12 @@ export default function OutcomeScreen({ route, navigation }) {
           }}
         >
           <Text style={{ fontSize: 18 }}>Ngày: </Text>
-          <DateTimePicker
+          {/* <DateTimePicker
             value={date}
             onChange={(e, date) => {
               setDate(date);
             }}
-          />
+          /> */}
         </View>
 
         <View

@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import Report from './report';
-import DetailOutcomeScreen from './Detail/detailspend';
+import DetailSpendScreen from './Detail/detailspend';
 import DetailEarnScreen from './Detail/detailearn';
 
 const Stack = createStackNavigator();
@@ -10,8 +10,8 @@ const ReportScreen = () => {
   return (
     <Stack.Navigator initialRouteName="Report">
       <Stack.Screen name="Báo cáo theo tháng" component={Report} />
-      <Stack.Screen name="Ăn uống T3" component={DetailOutcomeScreen} />
-      <Stack.Screen name="Tiền lương T3" component={DetailEarnScreen} />
+      <Stack.Screen name="Khoản chi theo danh mục" component={DetailSpendScreen} />
+      <Stack.Screen name="Khoản thu theo danh mục" component={DetailEarnScreen} />
     </Stack.Navigator>
   );
 };

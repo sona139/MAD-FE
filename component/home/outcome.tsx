@@ -1,5 +1,4 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Keyboard,
   Pressable,
@@ -11,22 +10,22 @@ import {
   View,
 } from "react-native";
 import { ICategory } from "../../interface";
+import { Modal } from "native-base";
 import { getAllCategoryExpense } from "../../api/category-expense";
 import { addExpense } from "../../api/expense";
-import { Modal } from "native-base";
 import AuthContext from "../../hook/userContext";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function OutcomeScreen({ route }) {
-  const [categoryOutcomeList, setCategoryOutcomeList] = useState<ICategory[]>(
-    []
-  );
+  const [categoryOutcomeList, setCategoryOutcomeList] = useState<ICategory[]>([]);
   const [date, setDate] = useState(route.params?.date || new Date());
   const [note, setNote] = useState("");
   const [money, setMoney] = useState(0);
   const [selectedItem, setSelectedItem] = useState(0);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const { forceUpdate } = useContext(AuthContext);
 
   const handlePressItem = (v) => {
@@ -57,6 +56,13 @@ export default function OutcomeScreen({ route }) {
       setModalContent("Thêm thành công tiền chi!");
       forceUpdate((prev) => prev + 1);
     });
+  };
+
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -102,14 +108,21 @@ export default function OutcomeScreen({ route }) {
           }}
         >
           <Text style={{ fontSize: 18 }}>Ngày: </Text>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <Text style={styles.dateText}>{formatDate(date)}</Text>
+          </TouchableOpacity>
+        </View>
+        {showDatePicker && (
           <DateTimePicker
             value={date}
-            onChange={(e, date) => {
-              setDate(date);
+            mode="date"
+            onChange={(event, selectedDate) => {
+              const currentDate = selectedDate || date;
+              setShowDatePicker(false);
+              setDate(currentDate);
             }}
           />
-        </View>
-
+        )}
         <View
           style={{
             display: "flex",
@@ -293,6 +306,10 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     backgroundColor: "#2196F3",
+  },
+  dateText: {
+    fontSize: 18,
+    fontFamily: "Arial", // Phông chữ và fontSize giống với Text "Ngày: "
   },
   textStyle: {
     color: "white",

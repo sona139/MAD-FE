@@ -30,7 +30,7 @@ const MoreStack = ({ navigation }) => {
       <Stack.Screen
         name="Compare"
         component={Compared}
-        options={{ headerTitle: "Số dư" }}
+        options={{ headerTitle: "Số dư trong năm" }}
       />
       <Stack.Screen
         name="Fixed spend"
