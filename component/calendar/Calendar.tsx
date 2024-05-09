@@ -13,9 +13,8 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Entypo from "react-native-vector-icons/Entypo";
-import { fixedIncomeList } from "../more/fixed-income";
-import { fixedOutcomeList, intervals } from "../more/fixed-outcome";
 import { IFixedIncome, IFixedOutcome } from "../../interface";
+import { intervals } from "../more/fixed-outcome";
 
 const days = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 

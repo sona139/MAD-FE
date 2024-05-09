@@ -33,8 +33,6 @@ const RegisterForm = ({ navigation }) => {
     ) {
       return;
     }
-    console.log({ data });
-
     if (!(data.email as string).includes("@gmail.com")) {
       setErrorEmail("Email không hợp lệ");
       setErrorPassword("");

@@ -12,7 +12,7 @@ import axios from "axios";
 import AuthContext from './hook/userContext';
 
 export default function App() {
-  axios.defaults.baseURL = 'http://192.168.2.103:3002/api/'
+  axios.defaults.baseURL = 'http:192.168.2.101:3002/api/'
   const [user, setUser] = useState({})
   const [update, forceUpdate] = useState(0)
   

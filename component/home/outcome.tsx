@@ -20,6 +20,8 @@ export default function OutcomeScreen({ route }) {
   const [categoryOutcomeList, setCategoryOutcomeList] = useState<ICategory[]>(
     []
   );
+
+  console.log(route.params)
   const [date, setDate] = useState(route.params?.date || new Date());
   const [note, setNote] = useState("");
   const [money, setMoney] = useState(0);

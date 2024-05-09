@@ -2,6 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import CalendarScreen from "../../component/calendar";
 import EditIncome from "../../component/calendar/edit/income";
 import EditOutcome from "../../component/calendar/edit/outcome";
+import HomeScreen from "../home";
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,10 @@ const CalendarStack = () => {
         name="Edit income"
         component={EditIncome}
         options={{ headerTitle: "Chỉnh sửa" }}
+      />
+      <Stack.Screen
+        name="Add"
+        component={HomeScreen}
       />
     </Stack.Navigator>
   );

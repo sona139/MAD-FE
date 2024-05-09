@@ -30,9 +30,12 @@ export const getUser = async () => {
 // Register
 export const signup = async (value) => {
   try {
+    
     const response = await axios.post("auth/signup", value);
+    console.log(response)
     return response;
   } catch (error) {
+    console.log(error)
     return error.response;
   }
 };
